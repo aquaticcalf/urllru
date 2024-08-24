@@ -1,0 +1,19 @@
+---
+import { Link, db, eq } from "astro:db"
+
+const { urllru } = Astro.params
+
+if (!urllru) {
+  return Astro.redirect("/")
+}
+
+const query = await db.select().from(Link).where(eq(Link.short, urllru))
+const exist = query.length >= 1
+
+if (!exist) {
+  return Astro.redirect("/")
+}
+
+Astro.response.status = 301
+Astro.response.headers.set("Location", query[0].original)
+---
