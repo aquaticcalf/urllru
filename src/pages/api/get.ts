@@ -15,7 +15,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     short = short.trim().replace(/\//g, '').slice(-7)
 
-    const shortValidation = z.string().length(7).regex(/^[a-zA-Z]+$/).safeParse(short)
+    const shortValidation = z.string().length(7).regex(/^[a-zA-Z0-9]+$/).safeParse(short)
     if (!shortValidation.success) {
       return new Response(`invalid short identifier: ${JSON.stringify(shortValidation.error.issues)}`, { status: 400 })
     }

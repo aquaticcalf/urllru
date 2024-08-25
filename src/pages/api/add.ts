@@ -5,7 +5,9 @@ import { z } from "zod"
 
 export const POST: APIRoute = async ({ request }) => {
   const formData = await request.formData()
-  const originalUrl = formData.get("original") as string | null
+  const originalUrluntrimmed = formData.get("original") as string | null
+
+  const originalUrl = originalUrluntrimmed?.trim().replace(/\/+$/, "")
 
   const urlValidation = z.string().url().safeParse(originalUrl)
   if (!urlValidation.success) {
@@ -13,6 +15,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const url = new URL(urlValidation.data)
+
   if (url.hostname === "urllru.vercel.app") {
     return new Response("cannot shorten urls from the same domain to prevent recursion.", { status: 400 })
   }
