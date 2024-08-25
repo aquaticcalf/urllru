@@ -1,16 +1,89 @@
----
+<!DOCTYPE html>
+<html lang="en" data-theme="valentine">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Astro">
+    <title>urllru</title>
+	<link rel="shortcut icon" href="https://aqclf.xyz/sam.png" type="image/x-icon">
+	<link rel="stylesheet" href="https://aqclf.xyz/comic.css">
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen">
+	<div class="prose p-5">
+		<h1 class="text-center select-none">url | lru</h1>
+	</div>
+	<div class="w-[95vw] max-w-[600px] p-5 bg-red-200 flex flex-col gap-5 rounded">
+		<input type="text" placeholder="enter url" class="input w-full">
+		<div class="w-full flex gap-2">
+			<button class="btn btn-primary grow" id="short">make short</button>
+			<button class="btn btn-primary grow" id="long">make long</button>
+		</div>
+	</div>
+	<div class="tooltip tooltip-bottom m-5" data-tip="copy">
+		<div id="result" class="text-center overflow-x-auto max-w-[90vw] cursor-pointer hidden"></div>
+	</div>
+	<script>
+		document.getElementById('short').addEventListener('click', async () => {
+			const url = document.querySelector('.input').value
+			if (!url.startsWith('http')) {
+				document.getElementById('result').innerText = `please enter a valid url, try starting with http or https`
+				document.getElementById('result').classList.remove('hidden')
+				document.getElementById('result').classList.add('text-red-500')
+				return
+			}
+			const response = await fetch('/api/add', {
+				method: 'POST',
+				body: new URLSearchParams({ original: url })
+			})
+			if (response.ok) {
+				const shortUrl = await response.text()
+				document.getElementById('result').innerText = `https://urllru.vercel.app/${shortUrl}`
+				document.getElementById('result').classList.remove('hidden')
+			}
+			if (!response.ok) {
+				const errorText = await response.text()
+				document.getElementById('result').innerText = `${errorText}`
+				document.getElementById('result').classList.remove('hidden')
+				document.getElementById('result').classList.add('text-red-500')
+			}
+		})
 
----
+		document.getElementById('long').addEventListener('click', async () => {
+			const url = document.querySelector('.input').value
+			if (!url.startsWith('http')) {
+				document.getElementById('result').innerText = `please enter a valid url, try starting with http or https`
+				document.getElementById('result').classList.remove('hidden')
+				document.getElementById('result').classList.add('text-red-500')
+				return
+			}
+			const response = await fetch('/api/get', {
+				method: 'POST',
+				body: new URLSearchParams({ short: url })
+			})
+			if (response.ok) {
+				const longUrl = await response.text()
+				document.getElementById('result').innerText = `${longUrl}`
+				document.getElementById('result').classList.remove('hidden')
+			}
+			if (!response.ok) {
+				const errorText = await response.text()
+				document.getElementById('result').innerText = `${errorText}`
+				document.getElementById('result').classList.remove('hidden')
+				document.getElementById('result').classList.add('text-red-500')
+			}
+		})
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>urllru</title>
-	</head>
-	<body>
-		<h1>urllru</h1>
-	</body>
+		document.getElementById('result').addEventListener('click', () => {
+			const textarea = document.createElement('textarea')
+			textarea.value = document.getElementById('result').innerText
+			document.body.appendChild(textarea)
+			textarea.select()
+			document.execCommand('copy')
+			document.body.removeChild(textarea)
+			document.getElementById('result').innerText = `copied to clipboard`
+			document.getElementById('result').classList.remove('hidden')
+			document.getElementById('result').classList.add('text-green-500')
+		})
+	</script>
+</body>
 </html>

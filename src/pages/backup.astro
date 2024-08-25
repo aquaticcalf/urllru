@@ -1,0 +1,63 @@
+
+<body class="flex border border-2 p-[1000px]">
+    <div class="card w-full max-w-md bg-white shadow-2xl rounded-lg">
+        <div class="card-body p-6">
+            <h2 class="card-title text-3xl font-bold text-center mb-6 text-indigo-600">Shorten Your URL</h2>
+            <form id="urlForm" class="form-control space-y-4">
+                <div class="space-y-2">
+                    <label for="originalUrl" class="label">
+                        <span class="label-text text-lg font-semibold text-gray-700">Enter URL</span>
+                    </label>
+                    <div class="input-group">
+                        <input type="url" id="originalUrl" class="input input-bordered w-full px-4 py-2 border-2 border-indigo-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="https://example.com" required />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-full mt-4 bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">Shorten</button>
+            </form>
+            <div id="result" class="mt-6"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('urlForm').addEventListener('submit', async (event) => {
+            event.preventDefault()
+            const originalUrl = document.getElementById('originalUrl').value
+            const resultDiv = document.getElementById('result')
+            resultDiv.innerHTML = '<div class="loading loading-spinner text-indigo-600 mx-auto"></div>'
+            try {
+                const response = await fetch('/api/add', {
+                    method: 'POST',
+                    body: new URLSearchParams({ original: originalUrl })
+                });
+                if (response.ok) {
+                    const shortUrl = await response.text();
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success shadow-lg mt-4 bg-green-50 border-t-4 border-green-500 text-green-700 p-4 rounded-lg">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span>Shortened URL: <a href="https://urllru.vercel.app/${shortUrl}" target="_blank" class="link link-hover text-indigo-700 underline">https://urllru.vercel.app/${shortUrl}</a></span>
+                            </div>
+                        </div>`;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-error shadow-lg mt-4 bg-red-50 border-t-4 border-red-500 text-red-700 p-4 rounded-lg">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span>Error: ${errorText}</span>
+                            </div>
+                        </div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-error shadow-lg mt-4 bg-red-50 border-t-4 border-red-500 text-red-700 p-4 rounded-lg">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span>Error: ${error.message}</span>
+                        </div>
+                    </div>`;
+            }
+        });
+    </script>
+</body>
+</html>
