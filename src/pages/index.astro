@@ -26,8 +26,8 @@
 	<script>
 		document.getElementById('short').addEventListener('click', async () => {
 			var url = (document.querySelector('.input') as HTMLInputElement).value
-			if (!url.startsWith('http')) {
-				document.getElementById('result').innerText = `please enter a valid url, try starting with http or https`
+			if (!url.startsWith('http://') && !url.startsWith('https://')) {
+				document.getElementById('result').innerText = `please enter a valid url, try starting with http:// or https://`
 				document.getElementById('resultbox').classList.remove('hidden')
 				document.getElementById('result').classList.add('text-red-500')
 				return
@@ -53,8 +53,8 @@
 
 		document.getElementById('long').addEventListener('click', async () => {
 			var url = (document.querySelector('.input') as HTMLInputElement).value
-			if (!url.startsWith('http')) {
-				document.getElementById('result').innerText = `please enter a valid url, try starting with http or https`
+			if (!url.startsWith('http://') && !url.startsWith('https://')) {
+				document.getElementById('result').innerText = `please enter a valid url, try starting with http:// or https://`
 				document.getElementById('resultbox').classList.remove('hidden')
 				document.getElementById('result').classList.add('text-red-500')
 				return
